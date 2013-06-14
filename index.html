@@ -1,0 +1,52 @@
+<html>
+<head>
+<script src=webaudio-bench.js></script>
+<meta charset="utf-8">
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+    td {
+      border: 1px solid black;
+      text-align: center;
+    }
+    #run-all {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<progress id=loading></progress>
+<button id=run-all>Run all</button>
+<div id=results>
+</div>
+<script>
+registerTestFile("think-looped-mono.wav");
+registerTestFile("think-looped.wav");
+registerTestCase(function SimpleGain() {
+  var oac = new OfflineAudioContext(1, 10 * samplerate, samplerate);
+  var source0 = oac.createBufferSource();
+  source0.buffer = getMonoFile();
+  source0.loop = true;
+  source0.connect = oac.destination;
+  source0.start(0);
+  return {
+    context: oac,
+    name: "Simple gain test"
+  };
+});
+registerTestCase(function SimpleGainStereo() {
+  var oac = new OfflineAudioContext(2, 10 * samplerate, samplerate);
+  var source0 = oac.createBufferSource();
+  source0.buffer = getMonoFile();
+  source0.loop = true;
+  source0.connect = oac.destination;
+  source0.start(0);
+  return {
+    context: oac,
+    name: "Simple gain test (Stereo)"
+  };
+});
+</script>
+</body>
+</html>

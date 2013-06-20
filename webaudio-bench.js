@@ -40,6 +40,17 @@ function benchmark(testcase, ended) {
   var start;
 
   context.oncomplete = function(b) {
+    var ctx = new AudioContext();
+    var node = ctx.createBufferSource();
+    for (var i = 0; i < b.renderedBuffer.length; i++) {
+      if (b.renderedBuffer.getChannelData(0)[i] != 0.0) {
+        console.log(b.renderedBuffer.getChannelData(0)[i]);
+      }
+    }
+    node.buffer = b.renderedBuffer;
+    node.connect(ctx.destination);
+    node.start(0);
+
     var end = Date.now();
     recordResult({
       name: testcase.name,
@@ -84,6 +95,7 @@ function displayResult(r) {
 }
 
 function allDone() {
+  document.getElementById("in-progress").style.display = "none";
   var result = document.getElementById("results");
   var str = ""
   str = "<table><tr><td>Test name</td><td>Time in ms</td></tr>";
@@ -134,6 +146,7 @@ function loadAllSources(endCallback) {
 
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("run-all").addEventListener("click", function() {
+    document.getElementById("in-progress").style.display = "block";
     runAll();
   });
   loadAllSources(function() {

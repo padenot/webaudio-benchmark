@@ -2,22 +2,29 @@
 <head>
 <script src=webaudio-bench.js></script>
 <meta charset="utf-8">
-  <style>
-    table {
-      border-collapse: collapse;
-    }
-    td {
-      border: 1px solid black;
-      text-align: center;
-    }
-    #run-all {
-      display: none;
-    }
-  </style>
+<style>
+  #in-progress {
+    display: none;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  td {
+    border: 1px solid black;
+    text-align: center;
+  }
+  #run-all {
+    display: none;
+  }
+</style>
 </head>
 <body>
 <progress id=loading></progress>
 <button id=run-all>Run all</button>
+<div id=in-progress>
+  <progress> </progress>
+  Benchmark in progress...
+</div>
 <div id=results>
 </div>
 <script>

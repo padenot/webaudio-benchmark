@@ -1,3 +1,8 @@
+if (window.AudioContext == undefined) {
+  window.AudioContext = window.webkitAudioContext;
+  window.OfflineAudioContext = window.webkitOfflineAudioContext;
+}
+
 // Global samplerate at which we run the context.
 var samplerate = 48000;
 // Array containing at first the url of the audio resources to fetch, and the
@@ -5,15 +10,15 @@ var samplerate = 48000;
 var sources = [];
 // Array containing the results, for each benchmark.
 var results = [];
-// Array containing at first the function objects (before init), and then an
-// object with the context on which we can call |startRendering| and the name of
-// the testcase.
+// Array containing the offline contexts used to run the testcases.
 var testcases = [];
-
-if (window.AudioContext == undefined) {
-  window.AudioContext = window.webkitAudioContext;
-  window.OfflineAudioContext = window.webkitOfflineAudioContext;
-}
+// Array containing the functions that can return a runnable testcase.
+var testcases_registered = [];
+// Array containing the audio buffers for each benchmark
+var buffers = [];
+var playingSource = null;
+// audiocontext used to play back the result of the benchmarks
+var ac = new AudioContext();
 
 function getFile(url, callback) {
   var request = new XMLHttpRequest();
@@ -39,22 +44,12 @@ function benchmark(testcase, ended) {
   var context = testcase.context;
   var start;
 
-  context.oncomplete = function(b) {
-    var ctx = new AudioContext();
-    var node = ctx.createBufferSource();
-    for (var i = 0; i < b.renderedBuffer.length; i++) {
-      if (b.renderedBuffer.getChannelData(0)[i] != 0.0) {
-        console.log(b.renderedBuffer.getChannelData(0)[i]);
-      }
-    }
-    node.buffer = b.renderedBuffer;
-    node.connect(ctx.destination);
-    node.start(0);
-
+  context.oncomplete = function(e) {
     var end = Date.now();
     recordResult({
       name: testcase.name,
-      duration: end - start
+      duration: end - start,
+      buffer: e.renderedBuffer
     });
     ended();
   };
@@ -88,22 +83,47 @@ function getSpecificFile(spec) {
   throw new Error("Could not find a file that matches the specs.");
 }
 
-function displayResult(r) {
-
-  return "<tr><td>" + r.name + "</td>" +
-    "<td>" + r.duration + "</td></tr>";
-}
-
 function allDone() {
   document.getElementById("in-progress").style.display = "none";
   var result = document.getElementById("results");
-  var str = ""
-  str = "<table><tr><td>Test name</td><td>Time in ms</td></tr>";
+  var str = "<table><thead><tr><td>Test name</td><td>Time in ms</td><td>Speedup vs. realtime</td><td>Sound</td></tr></thead>";
+  var buffers_base = buffers.length;
   for (var i = 0 ; i < results.length; i++) {
-    str += displayResult(results[i]);
+    var r = results[i];
+    str += "<tr><td>" + r.name + "</td>" +
+               "<td>" + r.duration + "</td>"+
+               "<td>" + Math.round((r.buffer.duration * 1000) / r.duration) + "x</td>"+
+               "<td><button data-soundindex="+(buffers_base + i)+">Play</button> ("+r.buffer.duration+"s)</td>"
+          +"</tr>";
+    buffers[buffers_base + i] = r.buffer;
   }
   str += "</table>";
-  result.innerHTML = str;
+  result.innerHTML += str;
+  result.addEventListener("click", function(e) {
+    var t = e.target;
+    if (t.dataset.soundindex != undefined) {
+      if (playingSource != null) {
+        playingSource.button.innerHTML = "Play";
+        playingSource.onended = undefined;
+        playingSource.stop(0);
+        if (playingSource.button == t) {
+          playingSource = null;
+          return;
+        }
+      }
+      playingSource = ac.createBufferSource();
+      playingSource.connect(ac.destination);
+      playingSource.buffer = buffers[t.dataset.soundindex];
+      playingSource.start(0);
+      playingSource.button = t;
+      t.innerHTML = "Pause";
+      playingSource.onended = function () {
+        playingSource = null;
+      }
+    }
+  });
+
+  document.getElementById("run-all").disabled = false;
 }
 
 function runOne(i) {
@@ -117,14 +137,15 @@ function runOne(i) {
   });
 }
 
-function runAll(testcases) {
+function runAll() {
+  initAll();
   results = [];
   runOne(0);
 }
 
 function initAll() {
-  for (var i = 0; i < testcases.length; i++) {
-    testcases[i] = testcases[i]();
+  for (var i = 0; i < testcases_registered.length; i++) {
+    testcases[i] = testcases_registered[i]();
   }
 }
 
@@ -146,19 +167,19 @@ function loadAllSources(endCallback) {
 
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("run-all").addEventListener("click", function() {
-    document.getElementById("in-progress").style.display = "block";
+    document.getElementById("in-progress").style.display = "inline";
+    document.getElementById("run-all").disabled = true;
     runAll();
   });
   loadAllSources(function() {
     document.getElementById("loading").style.display = "none";
-    document.getElementById("run-all").style.display = "block";
-    initAll();
+    document.getElementById("run-all").style.display = "inline";
   });
 });
 
 /* Public API */
 function registerTestCase(testCase) {
-  testcases.push(testCase);
+  testcases_registered.push(testCase);
 }
 
 function registerTestFile(url) {

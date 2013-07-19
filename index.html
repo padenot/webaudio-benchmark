@@ -47,6 +47,31 @@ registerTestFile("think-stereo-48000.wav");
 registerTestFile("think-stereo-44100.wav");
 registerTestFile("think-stereo-38000.wav");
 
+
+registerTestCase(function () {
+  var oac = new OfflineAudioContext(1, 120 * samplerate, samplerate);
+  var source0 = oac.createBufferSource();
+  source0.buffer = getSpecificFile({rate: oac.samplerate, channels:1});
+  source0.loop = true;
+  source0.connect(oac.destination);
+  source0.start(0);
+  return {
+    context: oac,
+    name: "Simple gain test without resampling"
+  };
+});
+registerTestCase(function () {
+  var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+  var source0 = oac.createBufferSource();
+  source0.buffer = getSpecificFile({rate: oac.samplerate, channels:2});
+  source0.loop = true;
+  source0.connect(oac.destination);
+  source0.start(0);
+  return {
+    context: oac,
+    name: "Simple gain test without resampling (Stereo)"
+  };
+});
 registerTestCase(function () {
   var oac = new OfflineAudioContext(1, 120 * samplerate, samplerate);
   var source0 = oac.createBufferSource();
@@ -60,9 +85,9 @@ registerTestCase(function () {
   };
 });
 registerTestCase(function () {
-  var oac = new OfflineAudioContext(2, 30 * samplerate, samplerate);
+  var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
   var source0 = oac.createBufferSource();
-  source0.buffer = getSpecificFile({rate: 38000, channels:1});
+  source0.buffer = getSpecificFile({rate: 38000, channels:2});
   source0.loop = true;
   source0.connect(oac.destination);
   source0.start(0);
@@ -71,10 +96,33 @@ registerTestCase(function () {
     name: "Simple gain test (Stereo)"
   };
 });
+registerTestCase(function () {
+  var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+  var source0 = oac.createBufferSource();
+  source0.buffer = getSpecificFile({rate: oac.samplerate, channels:1});
+  source0.loop = true;
+  source0.connect(oac.destination);
+  source0.start(0);
+  return {
+    context: oac,
+    name: "Upmix without resampling (Mono -> Stereo)"
+  };
+});
+registerTestCase(function () {
+  var oac = new OfflineAudioContext(1, 120 * samplerate, samplerate);
+  var source0 = oac.createBufferSource();
+  source0.buffer = getSpecificFile({rate: oac.samplerate, channels:2});
+  source0.loop = true;
+  source0.connect(oac.destination);
+  source0.start(0);
+  return {
+    context: oac,
+    name: "Downmix without resampling (Mono -> Stereo)"
+  };
+});
 registerTestCase(function() {
   var oac = new OfflineAudioContext(2, 30 * samplerate, samplerate);
-  var sources = [];
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < 100; i++) {
     var source0 = oac.createBufferSource();
     source0.buffer = getSpecificFile({rate: 38000, channels:1});
     source0.loop = true;
@@ -83,7 +131,29 @@ registerTestCase(function() {
   }
   return {
     context: oac,
-    name: "Simple mixing"
+    name: "Simple mixing (same buffer)"
+  };
+});
+registerTestCase(function() {
+  var oac = new OfflineAudioContext(2, 30 * samplerate, samplerate);
+  var reference = getSpecificFile({rate: 38000, channels:1}).getChannelData(0);
+  for (var i = 0; i < 100; i++) {
+    var source0 = oac.createBufferSource();
+    // copy the buffer into the a new one, so we know the implementation is not
+    // sharing them.
+    var b = oac.createBuffer(1, reference.length, 38000);
+    var data = b.getChannelData(0);
+    for (var j = 0; j < b.length; j++) {
+      data[i] = reference[i];
+    }
+    source0.buffer = b;
+    source0.loop = true;
+    source0.connect(oac.destination);
+    source0.start(0);
+  }
+  return {
+    context: oac,
+    name: "Simple mixing (different buffers)"
   };
 });
 </script>

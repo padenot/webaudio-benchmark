@@ -41,7 +41,7 @@ function recordResult(result) {
 }
 
 function benchmark(testcase, ended) {
-  var context = testcase.context;
+  var context = testcase.ctx;
   var start;
 
   context.oncomplete = function(e) {
@@ -88,8 +88,11 @@ function allDone() {
   var result = document.getElementById("results");
   var str = "<table><thead><tr><td>Test name</td><td>Time in ms</td><td>Speedup vs. realtime</td><td>Sound</td></tr></thead>";
   var buffers_base = buffers.length;
+  var product_of_durations = 1.0;
+
   for (var i = 0 ; i < results.length; i++) {
     var r = results[i];
+    product_of_durations *= r.duration;
     str += "<tr><td>" + r.name + "</td>" +
                "<td>" + r.duration + "</td>"+
                "<td>" + Math.round((r.buffer.duration * 1000) / r.duration) + "x</td>"+
@@ -97,6 +100,11 @@ function allDone() {
           +"</tr>";
     buffers[buffers_base + i] = r.buffer;
   }
+  recordResult({
+    name: "Geometric Mean",
+    duration: Math.round(Math.pow(product_of_durations, 1.0/results.length)),
+    buffer: {}
+  });
   str += "</table>";
   result.innerHTML += str;
   result.addEventListener("click", function(e) {
@@ -124,6 +132,11 @@ function allDone() {
   });
 
   document.getElementById("run-all").disabled = false;
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "/results", true);
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhr.send("results=" + JSON.stringify(results));
 }
 
 function runOne(i) {
@@ -145,7 +158,9 @@ function runAll() {
 
 function initAll() {
   for (var i = 0; i < testcases_registered.length; i++) {
-    testcases[i] = testcases_registered[i]();
+    testcases[i] = {};
+    testcases[i].ctx = testcases_registered[i].func();
+    testcases[i].name = testcases_registered[i].name;
   }
 }
 
@@ -174,6 +189,8 @@ document.addEventListener("DOMContentLoaded", function() {
   loadAllSources(function() {
     document.getElementById("loading").style.display = "none";
     document.getElementById("run-all").style.display = "inline";
+    document.getElementById("in-progress").style.display = "inline";
+    setTimeout(runAll, 100);
   });
 });
 

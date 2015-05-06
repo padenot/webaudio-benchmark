@@ -14,6 +14,14 @@ registerTestFile("think-stereo-38000.wav");
 registerTestCase({
   func: function () {
     var oac = new OfflineAudioContext(1, 120 * samplerate, samplerate);
+    return oac;
+  },
+  name: "Empty testcase"
+});
+
+registerTestCase({
+  func: function () {
+    var oac = new OfflineAudioContext(1, 120 * samplerate, samplerate);
     var source0 = oac.createBufferSource();
     source0.buffer = getSpecificFile({rate: oac.samplerate, channels:1});
     source0.loop = true;

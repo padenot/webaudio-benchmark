@@ -8,8 +8,12 @@ var fs = require('fs');
 var str = JSON.stringify(template);
 
 var names = benchmarks.benchmarks;
+
 for (var i in benchmarks.benchmarks) {
-  dashboard.rows.push(JSON.parse(str.replace(/{{}}/g, names[i])));
+  ["win", "linux", "mac", "android"].forEach(function(platform) {
+    var out = str.replace(/{{benchmark}}/g, names[i]).replace(/{{platform}}/g, platform);
+    dashboard.rows.push(JSON.parse(out));
+  });
 }
 
 fs.writeFile(OUTPUT_PATH, JSON.stringify(dashboard, " ", 2), function(err) {

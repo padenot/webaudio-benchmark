@@ -1,11 +1,11 @@
 {
-  "title": "{{}}",
+  "title": "{{benchmark}} -- {{platform}}",
   "height": "250px",
   "editable": true,
   "collapse": true,
   "panels": [
     {
-      "title": "{{}}",
+      "title": "{{benchmark}} -- {{platform}}",
       "error": false,
       "span": 12,
       "editable": true,
@@ -57,15 +57,15 @@
         {
           "function": "mean",
           "column": "value",
-          "series": "benchmarks.webaudio-padenot.{{}}.linux.firefox.nightly",
-          "query": "select mean(value) from \"benchmarks.webaudio-padenot.{{}}.linux.firefox.nightly\" where $timeFilter group by time($interval) order asc",
+          "series": "benchmarks.webaudio-padenot.{{benchmark}}.{{platform}}.firefox.nightly",
+          "query": "select mean(value) from \"benchmarks.webaudio-padenot.{{benchmark}}.{{platform}}.firefox.nightly\" where $timeFilter group by time($interval) order asc",
           "hide": false
         },
         {
           "function": "mean",
           "column": "value",
-          "series": "benchmarks.webaudio-padenot.{{}}.linux.chrome.canary",
-          "query": "select mean(value) from \"benchmarks.webaudio-padenot.{{}}.linux.chrome.canary\" where $timeFilter group by time($interval) order asc",
+          "series": "benchmarks.webaudio-padenot.{{benchmark}}.{{platform}}.chrome.canary",
+          "query": "select mean(value) from \"benchmarks.webaudio-padenot.{{benchmark}}.{{platform}}.chrome.canary\" where $timeFilter group by time($interval) order asc",
           "hide": false,
           "groupby_field": ""
         }

@@ -195,6 +195,31 @@ registerTestCase({
   name: "Granular synthesis"
 });
 
+registerTestCase({
+  func: function() {
+    var samplerate = 44100;
+    var duration  = 30;
+    var oac = new OfflineAudioContext(1, duration * samplerate, 44100);
+    var offset = 0;
+    while (offset < duration) {
+      var note = oac.createOscillator();
+      var env = oac.createGain();
+      note.type = "sawtooth";
+      note.frequency.value = 110;
+      note.connect(env);
+      env.gain.setValueAtTime(0, 0);
+      env.gain.setValueAtTime(0.5, offset);
+      env.gain.setTargetAtTime(0, offset+0.01, 0.1);
+      env.connect(oac.destination);
+      note.start(offset);
+      note.stop(offset + 1.0);
+      offset += 140 / 60 / 4; // 140 bpm
+    }
+    return oac;
+  },
+  name: "Synth"
+})
+
 
 
 if (typeof(window) == "undefined") {

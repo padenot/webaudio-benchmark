@@ -248,7 +248,38 @@ registerTestCase({
     return oac;
   },
   name: "Synth"
-})
+});
+
+registerTestCase({
+  func: function() {
+    var samplerate = 44100;
+    var duration  = 30;
+    var oac = new OfflineAudioContext(1, duration * samplerate, samplerate);
+    var offset = 0;
+    var osc = oac.createOscillator();
+    osc.type = "sawtooth";
+    var enveloppe = oac.createGain();
+    enveloppe.gain.setValueAtTime(0, 0);
+    var filter = oac.createBiquadFilter();
+    osc.connect(enveloppe);
+    enveloppe.connect(filter);
+    filter.connect(oac.destination);
+    filter.frequency.setValueAtTime(0.0, 0.0);
+    filter.Q.setValueAtTime(20, 0.0);
+    osc.start(0);
+    osc.frequency.setValueAtTime(110, 0);
+
+    while (offset < duration) {
+      enveloppe.gain.setValueAtTime(1.0, offset);
+      enveloppe.gain.setTargetAtTime(0.0, offset, 0.1);
+      filter.frequency.setValueAtTime(0, offset);
+      filter.frequency.setTargetAtTime(3500, offset, 0.03);
+      offset += 140 / 60 / 16;
+    }
+    return oac;
+  },
+  name: "Substractive synth"
+});
 
 
 

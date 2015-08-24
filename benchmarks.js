@@ -137,6 +137,36 @@ registerTestCase({
 
 registerTestCase({
   func: function() {
+    var oac = new OfflineAudioContext(2, 300 * samplerate, samplerate);
+    var gain = oac.createGain();
+    gain.gain.value = -1;
+    gain.connect(oac.destination);
+    var gainsi = [];
+    for (var i = 0; i < 4; i++) {
+      var gaini = oac.createGain();
+      gaini.gain.value = 0.25;
+      gaini.connect(gain);
+      gainsi[i] = gaini
+    }
+    for (var j = 0; j < 2; j++) {
+      var sourcej = oac.createBufferSource();
+      sourcej.buffer = getSpecificFile({rate: 38000, channels:1});
+      sourcej.loop = true;
+      sourcej.start(0);
+      for (var i = 0; i < 4; i++) {
+        var gainij = oac.createGain();
+        gainij.gain.value = 0.5;
+        gainij.connect(gainsi[i]);
+        sourcej.connect(gainij);
+      }
+    }
+    return oac;
+  },
+  name: "Simple mixing with gains"
+});
+
+registerTestCase({
+  func: function() {
     var oac = new OfflineAudioContext(1, 30 * samplerate, samplerate);
     var i,l;
     var decay = 10;

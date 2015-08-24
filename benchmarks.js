@@ -46,6 +46,23 @@ registerTestCase({
 });
 
 registerTestCase({
+  func: function () {
+    var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+    var source0 = oac.createBufferSource();
+    var panner = oac.createPanner();
+    source0.buffer = getSpecificFile({rate: oac.samplerate, channels:2});
+    source0.loop = true;
+    panner.setPosition(1, 2, 3);
+    panner.setOrientation(10, 10, 10);
+    source0.connect(panner);
+    panner.connect(oac.destination);
+    source0.start(0);
+    return oac;
+  },
+  name: "Simple gain test without resampling (Stereo and positional)"
+});
+
+registerTestCase({
   func: function() {
     var oac = new OfflineAudioContext(1, 120 * samplerate, samplerate);
     var source0 = oac.createBufferSource();
@@ -69,6 +86,23 @@ registerTestCase({
     return oac;
   },
   name: "Simple gain test (Stereo)"
+});
+
+registerTestCase({
+  func: function() {
+    var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+    var source0 = oac.createBufferSource();
+    var panner = oac.createPanner();
+    source0.buffer = getSpecificFile({rate: 38000, channels:2});
+    source0.loop = true;
+    panner.setPosition(1, 2, 3);
+    panner.setOrientation(10, 10, 10);
+    source0.connect(panner);
+    panner.connect(oac.destination);
+    source0.start(0);
+    return oac;
+  },
+  name: "Simple gain test (Stereo and positional)"
 });
 
 registerTestCase({

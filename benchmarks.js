@@ -315,6 +315,38 @@ registerTestCase({
   name: "Substractive synth"
 });
 
+registerTestCase({
+  func: function () {
+    var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+    var source0 = oac.createBufferSource();
+    var panner = oac.createStereoPanner();
+    source0.buffer = getSpecificFile({rate: oac.samplerate, channels:2});
+    source0.loop = true;
+    panner.pan = 0.1;
+    source0.connect(panner);
+    panner.connect(oac.destination);
+    source0.start(0);
+    return oac;
+  },
+  name: "Stereo Panning"
+});
+
+registerTestCase({
+  func: function () {
+    var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+    var source0 = oac.createBufferSource();
+    var panner = oac.createStereoPanner();
+    source0.buffer = getSpecificFile({rate: oac.samplerate, channels:2});
+    source0.loop = true;
+    panner.pan.setValueAtTime(-0.1, 0.0);
+    panner.pan.setValueAtTime(0.2, 0.5);
+    source0.connect(panner);
+    panner.connect(oac.destination);
+    source0.start(0);
+    return oac;
+  },
+  name: "Stereo Panning with Automation"
+});
 
 
 if (typeof(window) == "undefined") {

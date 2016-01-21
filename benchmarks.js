@@ -348,6 +348,22 @@ registerTestCase({
   name: "Stereo Panning with Automation"
 });
 
+registerTestCase({
+  func: function () {
+    var oac = new OfflineAudioContext(2, 120 * samplerate, samplerate);
+    var osc = oac.createOscillator();
+    osc.type = 'sawtooth';
+    var freq = 2000;
+    osc.frequency.value = freq;
+    osc.frequency.linearRampToValueAtTime(20, 10.0);
+    osc.connect(oac.destination);
+    osc.start(0);
+    return oac;
+  },
+  name: "Periodic Wave with Automation"
+});
+
+
 
 if (typeof(window) == "undefined") {
   exports.benchmarks = benchmarks;

@@ -210,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function() {
     runAll();
   });
   loadAllSources(function() {
-    console.log("loaded")
     document.getElementById("loading").remove();
     document.getElementById("run-all").style.display = "inline";
     setTimeout(runAll, 100);

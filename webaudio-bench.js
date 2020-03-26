@@ -162,7 +162,7 @@ function allDone() {
 function runOne(i) {
   benchmark(testcases[i], function() {
     i++;
-    $("#progress-bar")[0].value = i;
+    $("#progress-bar")[0].value++;
     if (i < testcases.length) {
       runOne(i);
     } else {
@@ -173,6 +173,7 @@ function runOne(i) {
 
 function runAll() {
   $("#progress-bar")[0].max = testcases_registered.length;
+  $("#progress-bar")[0].value = 0;
   initAll();
   results = [];
   runOne(0);

@@ -148,7 +148,7 @@ function allDone() {
 
   document.getElementById("run-all").disabled = false;
 
-  if (location.search == '?raptor') {
+  if (location.search.includes("raptor")) {
     var _data = ['raptor-benchmark', 'webaudio', JSON.stringify(results)];
     window.postMessage(_data, '*');
   } else {

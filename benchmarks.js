@@ -11,18 +11,6 @@ registerTestFile("think-stereo-48000.wav");
 registerTestFile("think-stereo-44100.wav");
 registerTestFile("think-stereo-38000.wav");
 
-let DURATION = null;
-if (location.search) {
-  let duration = location.search.match(/duration=(\d+)/)[1];
-  if (duration) {
-    DURATION = duration;
-  } else {
-    DURATION = 120;
-  }
-} else {
-  DURATION = 120;
-}
-
 registerTestCase({
   func: function () {
     var oac = new OfflineAudioContext(1, DURATION * samplerate, samplerate);

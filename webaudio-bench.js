@@ -5,6 +5,19 @@ if (window.AudioContext == undefined) {
 
 $ = document.querySelectorAll.bind(document);
 
+let DURATION = null;
+if (location.search) {
+  let duration = location.search.match(/duration=(\d+)/)[1];
+  if (duration) {
+    DURATION = duration;
+  } else {
+    DURATION = 120;
+  }
+} else {
+  DURATION = 120;
+}
+
+
 // Global samplerate at which we run the context.
 var samplerate = 48000;
 // Array containing at first the url of the audio resources to fetch, and the

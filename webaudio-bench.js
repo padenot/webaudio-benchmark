@@ -148,10 +148,15 @@ function allDone() {
 
   document.getElementById("run-all").disabled = false;
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", "/results", true);
-  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhr.send("results=" + JSON.stringify(results));
+  if (location.search == '?raptor') {
+    var _data = ['raptor-benchmark', 'webaudio', JSON.stringify(results)];
+    window.postMessage(_data, '*');
+  } else {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/results", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.send("results=" + JSON.stringify(results));
+  }
 }
 
 function runOne(i) {

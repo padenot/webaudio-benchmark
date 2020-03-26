@@ -3,6 +3,8 @@ if (window.AudioContext == undefined) {
   window.OfflineAudioContext = window.webkitOfflineAudioContext;
 }
 
+$ = document.querySelectorAll.bind(document);
+
 // Global samplerate at which we run the context.
 var samplerate = 48000;
 // Array containing at first the url of the audio resources to fetch, and the
@@ -142,6 +144,7 @@ function allDone() {
 function runOne(i) {
   benchmark(testcases[i], function() {
     i++;
+    $("#progress-bar")[0].value = i;
     if (i < testcases.length) {
       runOne(i);
     } else {
@@ -151,6 +154,7 @@ function runOne(i) {
 }
 
 function runAll() {
+  $("#progress-bar")[0].max = testcases_registered.length;
   initAll();
   results = [];
   runOne(0);
@@ -187,9 +191,9 @@ document.addEventListener("DOMContentLoaded", function() {
     runAll();
   });
   loadAllSources(function() {
-    document.getElementById("loading").style.display = "none";
+    console.log("loaded")
+    document.getElementById("loading").remove();
     document.getElementById("run-all").style.display = "inline";
-    document.getElementById("in-progress").style.display = "inline";
     setTimeout(runAll, 100);
   });
 });

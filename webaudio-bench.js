@@ -7,9 +7,9 @@ $ = document.querySelectorAll.bind(document);
 
 let DURATION = null;
 if (location.search) {
-  let duration = location.search.match(/duration=(\d+)/)[1];
+  let duration = location.search.match(/duration=(\d+)/);
   if (duration) {
-    DURATION = duration;
+    DURATION = duration[1];
   } else {
     DURATION = 120;
   }

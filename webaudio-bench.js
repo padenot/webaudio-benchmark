@@ -7,7 +7,7 @@ $ = document.querySelectorAll.bind(document);
 
 let DURATION = null;
 if (location.search) {
-  let duration = location.search.match(/duration=(\d+)/);
+  let duration = location.search.match(/rendering-buffer-length=(\d+)/);
   if (duration) {
     DURATION = duration[1];
   } else {

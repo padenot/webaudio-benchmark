@@ -29,7 +29,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Simple gain test without resampling"
+  name: "Simple source test without resampling"
 });
 
 registerTestCase({
@@ -42,7 +42,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Simple gain test without resampling (Stereo)"
+  name: "Simple source test without resampling (Stereo)"
 });
 
 registerTestCase({
@@ -59,7 +59,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Simple gain test without resampling (Stereo and positional)"
+  name: "Simple source test without resampling (Stereo and positional)"
 });
 
 registerTestCase({
@@ -72,7 +72,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Simple gain test"
+  name: "Simple source test with resampling (Mono)"
 });
 
 registerTestCase({
@@ -85,7 +85,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Simple gain test (Stereo)"
+  name: "Simple source test with resampling (Stereo)"
 });
 
 registerTestCase({
@@ -102,7 +102,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Simple gain test (Stereo and positional)"
+  name: "Simple source test with resampling (Stereo and positional)"
 });
 
 registerTestCase({
@@ -128,7 +128,7 @@ registerTestCase({
     source0.start(0);
     return oac;
   },
-  name: "Downmix without resampling (Mono -> Stereo)"
+  name: "Downmix without resampling (Stereo -> Mono)"
 });
 
 registerTestCase({
@@ -144,7 +144,7 @@ registerTestCase({
     }
     return oac;
   },
-  name: "Simple mixing (same buffer)"
+  name: "Simple mixing (100x same buffer)"
 });
 
 registerTestCase({
@@ -168,7 +168,7 @@ registerTestCase({
     }
     return oac;
   },
-  name: "Simple mixing (different buffers)"
+  name: "Simple mixing (100 different buffers)"
 });
 
 registerTestCase({
